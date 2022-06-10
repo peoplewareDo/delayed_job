@@ -326,8 +326,10 @@ module Delayed
 
     def reload!
       return unless self.class.reload_app?
-      if defined?(ActiveSupport::Reloader)
-        Rails.application.reloader.reload!
+      if defined?(ActiveSupport::Reloader) 
+        && Rails.application.config.cache_classes == false && 
+        Rails.application.reloaders.map(&:updated?).any?
+          Rails.application.reloader.reload!
       else
         ActionDispatch::Reloader.cleanup!
         ActionDispatch::Reloader.prepare!
